@@ -252,5 +252,139 @@
       });
     }
   </script>
+  <!-- 비행기 터치 게임: </body> 바로 위에 붙여넣으세요. -->
+<style>
+  #wedding-flight-layer { position:fixed; inset:0; z-index:100; pointer-events:none; overflow:hidden; }
+  #wedding-flight-score { position:fixed; top:calc(14px + env(safe-area-inset-top, 0px)); right:14px; z-index:101; padding:10px 14px; border:1px solid #d8cbb9; border-radius:24px; background:rgba(255,252,247,.95); color:#534b40; font:14px/1.5 system-ui,sans-serif; box-shadow:0 3px 18px #534b4010; pointer-events:none; }
+  .wedding-plane { position:absolute; left:0; top:0; width:52px; height:52px; padding:9px; border:0; border-radius:50%; background:transparent; cursor:pointer; pointer-events:auto; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  .wedding-plane:focus-visible { outline:2px solid #8b7657; outline-offset:2px; background:#fffcf7; }
+  .wedding-plane svg { display:block; width:34px; height:34px; fill:#7396ab; stroke:#fffaf2; stroke-width:1.5; filter:drop-shadow(0 2px 3px #534b4030); }
+  .wedding-plane:disabled { cursor:default; pointer-events:none; }
+  .wedding-catch { position:absolute; inset:0; display:grid; place-items:center; animation:wedding-heart-out .9s ease-out forwards; }
+  .wedding-heart { color:#c47788; font:34px/1 serif; filter:drop-shadow(0 0 8px #edc2ce); }
+  .wedding-spark { position:absolute; left:calc(50% - 7px); top:calc(50% - 7px); color:#ad884a; font:18px/1 serif; animation:wedding-spark-out .9s ease-out forwards; }
+  @keyframes wedding-heart-out { 0%{opacity:1;transform:scale(.65)} 20%{opacity:1;transform:scale(1.22)} 45%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:translateY(-26px) scale(.85)} }
+  @keyframes wedding-spark-out { 0%{opacity:0;transform:translate(0,0) scale(.3)} 20%{opacity:1} 100%{opacity:0;transform:translate(var(--spark-x),var(--spark-y)) scale(.5)} }
+  @media(prefers-reduced-motion:reduce) {
+    .wedding-catch { animation-name:wedding-heart-fade; }
+    .wedding-spark { display:none; }
+    @keyframes wedding-heart-fade { from{opacity:1} to{opacity:0} }
+  }
+</style>
+<script>
+(() => {
+  if (document.getElementById('wedding-flight-layer')) return;
+  const storageKey = 'saintloove-wedding-plane-taps-v1';
+  let count = 0;
+  try {
+    const saved = Number(localStorage.getItem(storageKey));
+    if (Number.isSafeInteger(saved) && saved >= 0) count = saved;
+  } catch (_) {}
+  const layer = document.createElement('div');
+  layer.id = 'wedding-flight-layer';
+  const score = document.createElement('div');
+  score.id = 'wedding-flight-score';
+  score.setAttribute('role', 'status');
+  score.setAttribute('aria-live', 'polite');
+  score.setAttribute('aria-atomic', 'true');
+  const paintScore = () => { score.textContent = `✈ 터치 ${count}회`; };
+  paintScore();
+  document.body.append(layer, score);
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const planes = new Set();
+  const random = (min, max) => min + Math.random() * Math.max(0, max - min);
+  function bounds() {
+    return { x:Math.max(12, innerWidth - 64), y:Math.max(110, innerHeight - 90) };
+  }
+  function target(p) {
+    const b = bounds();
+    p.tx = random(12, b.x);
+    p.ty = random(110, b.y);
+  }
+  function draw(p) {
+    p.button.style.transform = `translate3d(${p.x}px,${p.y}px,0)`;
+    if (p.button.firstElementChild?.tagName.toLowerCase() === 'svg') {
+      p.button.firstElementChild.style.transform = `rotate(${p.angle}deg)`;
+    }
+  }
+  function spawn() {
+    const b = bounds();
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'wedding-plane';
+    button.setAttribute('aria-label', '비행기 잡기');
+    button.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3c2 0 3 3 3 6v7l13 9v4l-13-5v8l4 3v3l-7-2-7 2v-3l4-3v-8-0l-13 5v-4l13-9V9c0-3 1-6 3-6Z"/></svg>';
+    const p = { button, x:random(12,b.x), y:random(110,b.y), tx:0, ty:0, speed:random(45,75), angle:0, caught:false };
+    target(p);
+    draw(p);
+    button.addEventListener('click', () => {
+      if (p.caught) return;
+      p.caught = true;
+      button.disabled = true;
+      button.setAttribute('aria-label', '비행기를 잡았습니다');
+      button.innerHTML = '<span class="wedding-catch" aria-hidden="true"><span class="wedding-heart">♥</span></span>';
+      for (let i=0; i<7; i++) {
+        const spark = document.createElement('span');
+        const angle = i * Math.PI * 2 / 7;
+        spark.className = 'wedding-spark';
+        spark.setAttribute('aria-hidden', 'true');
+        spark.textContent = '✦';
+        spark.style.setProperty('--spark-x', `${Math.cos(angle)*42}px`);
+        spark.style.setProperty('--spark-y', `${Math.sin(angle)*42}px`);
+        button.append(spark);
+      }
+      // 하트와 반짝임이 사라진 뒤에만 점수를 올립니다.
+      setTimeout(() => {
+        button.remove();
+        planes.delete(p);
+        count += 1;
+        paintScore();
+        try { localStorage.setItem(storageKey, String(count)); } catch (_) {}
+        // 다음 비행기를 바로 보충해 처음의 2~3대 수를 유지합니다.
+        spawn();
+      }, 900);
+    });
+    layer.append(button);
+    planes.add(p);
+  }
+  // 시작할 때 두 대 또는 세 대를 무작위로 선택합니다.
+  const total = Math.random() < .5 ? 2 : 3;
+  for (let i=0; i<total; i++) spawn();
+  let lastTime = null;
+  function tick(time) {
+    const dt = lastTime === null ? 0 : Math.min((time-lastTime)/1000, .05);
+    lastTime = time;
+    if (!document.hidden && !reduceMotion.matches) {
+      planes.forEach(p => {
+        if (p.caught || p.button === document.activeElement) return;
+        const dx=p.tx-p.x, dy=p.ty-p.y;
+        const distance=Math.hypot(dx,dy);
+        if (distance < 8) { target(p); return; }
+        const step=Math.min(p.speed*dt,distance);
+        p.x += dx/distance*step;
+        p.y += dy/distance*step;
+        const desired=Math.atan2(dy,dx)*180/Math.PI+90;
+        const turn=((desired-p.angle+540)%360)-180;
+        p.angle += turn*Math.min(1,dt*4);
+        p.angle=(p.angle+360)%360;
+        draw(p);
+      });
+    }
+    requestAnimationFrame(tick);
+  }
+  addEventListener('resize', () => {
+    const b=bounds();
+    planes.forEach(p => {
+      p.x=Math.max(12,Math.min(p.x,b.x));
+      p.y=Math.max(110,Math.min(p.y,b.y));
+      target(p);
+      draw(p);
+    });
+  });
+  document.addEventListener('visibilitychange', () => { lastTime=null; });
+  requestAnimationFrame(tick);
+})();
+</script>
+
 </body>
 </html>
