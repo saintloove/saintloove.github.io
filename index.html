@@ -6,33 +6,47 @@
   <title>임석우 ♥ 이언주 결혼합니다</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       background: #f7f4ee;
       color: #49453f;
       font-family: "AppleMyungjo", "Batang", serif;
+      word-break: keep-all;
     }
 
     main {
-      box-sizing: border-box;
       max-width: 480px;
-      min-height: 100svh;
       margin: 0 auto;
-      padding: 90px 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       text-align: center;
     }
 
+    /* 첫 화면 */
+    .cover {
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: 70px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
     .label {
-      font-size: 12px;
-      letter-spacing: 4px;
+      font-size: 11px;
+      letter-spacing: 3px;
       color: #756b5d;
     }
 
     h1 {
-      margin: 36px 0;
+      margin: 32px 0;
       font-size: 30px;
       font-weight: normal;
       line-height: 1.8;
@@ -41,42 +55,202 @@
     .line {
       width: 36px;
       height: 1px;
-      margin: 0 auto 30px;
+      margin: 0 auto 28px;
       background: #b5a58b;
     }
 
     p {
+      margin: 0;
       font-size: 16px;
-      line-height: 2;
+      line-height: 2.1;
+    }
+
+    .names {
+      margin-top: 30px;
+      letter-spacing: 2px;
     }
 
     .note {
-      margin-top: 60px;
-      font-size: 13px;
+      margin-top: 40px;
+      font-size: 14px;
       color: #756b5d;
+    }
+
+    .scroll-link {
+      margin-top: 44px;
+      padding: 12px 20px;
+      color: #756b5d;
+      font-size: 12px;
+      line-height: 1.8;
+      text-decoration: none;
+    }
+
+    .scroll-link span {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .scroll-link:focus-visible {
+      outline: 2px solid #756b5d;
+      outline-offset: 4px;
+    }
+
+    /* 표지 아래의 초대 글 */
+    .invitation {
+      padding: 100px 24px 110px;
+      background: #fffcf7;
+      border-top: 1px solid #e8e0d4;
+    }
+
+    h2 {
+      margin: 18px 0 34px;
+      font-size: 25px;
+      font-weight: normal;
+      line-height: 1.6;
+    }
+
+    .letter p + p {
+      margin-top: 30px;
+    }
+
+    .signature {
+      margin-top: 48px;
+      font-size: 17px;
+      letter-spacing: 3px;
+    }
+
+    .signature small {
+      font-size: 12px;
+      letter-spacing: 0;
+      color: #756b5d;
+    }
+
+    /* 아래에서 살짝 올라오며 나타나는 효과 */
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .reveal.pending {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    /* 기기에서 동작 줄이기를 켠 경우 */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal,
+      .reveal.pending {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
     }
   </style>
 </head>
 
 <body>
   <main>
-    <p class="label">WE ARE GETTING MARRIED</p>
+    <!-- 첫 번째 구역: 표지 -->
+    <section class="cover" aria-labelledby="cover-title">
+      <p class="label">WE ARE GETTING MARRIED</p>
 
-    <h1>우리의 결혼식에<br>초대합니다</h1>
+      <h1 id="cover-title">
+        우리의 결혼식에<br>
+        초대합니다
+      </h1>
 
-    <div class="line"></div>
+      <div class="line" aria-hidden="true"></div>
 
-    <p>
-      서로의 일상에 스며든 두 사람,<br>
-      이제 같은 내일을 시작합니다.
-    </p>
+      <p>
+        서로의 일상에 스며든 두 사람,<br>
+        이제 같은 내일을 시작합니다.
+      </p>
 
-    <p>임석우 &amp; 이언주</p>
+      <p class="names">임석우 &amp; 이언주</p>
 
-    <p class="note">
-  2027년 1월 17일 일요일 오후 3시 30분<br>
-  더 컨벤션 반포
-</p>
+      <p class="note">
+        2027년 1월 17일 일요일 오후 3시 30분<br>
+        더 컨벤션 반포
+      </p>
+
+      <a class="scroll-link" href="#invitation">
+        아래로 스크롤
+        <span aria-hidden="true">↓</span>
+      </a>
+    </section>
+
+    <!-- 두 번째 구역: 초대 글 -->
+    <section
+      class="invitation"
+      id="invitation"
+      aria-labelledby="invitation-title"
+    >
+      <div class="reveal">
+        <p class="label">INVITATION</p>
+        <h2 id="invitation-title">소중한 분들을 초대합니다</h2>
+        <div class="line" aria-hidden="true"></div>
+      </div>
+
+      <div class="letter">
+        <p class="reveal">
+          함께하는 평범한 하루가<br>
+          가장 소중한 시간이 되었습니다.
+        </p>
+
+        <p class="reveal">
+          이제 서로의 곁에서<br>
+          같은 내일을 그려가려 합니다.
+        </p>
+
+        <p class="reveal">
+          저희의 새로운 시작에 함께하시어<br>
+          따뜻한 축복을 보내주시면<br>
+          감사하겠습니다.
+        </p>
+      </div>
+
+      <p class="signature reveal">
+        <small>신랑</small> 임석우<br>
+        <small>신부</small> 이언주
+      </p>
+    </section>
   </main>
+
+  <script>
+    // 화면에 들어온 문단은 한 번만 나타나게 합니다.
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    if (
+      "IntersectionObserver" in window &&
+      !reduceMotion.matches
+    ) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove("pending");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.15
+      });
+
+      document.querySelectorAll(".reveal").forEach((element) => {
+        // 이미 화면에 보이는 내용은 숨기지 않습니다.
+        if (element.getBoundingClientRect().top >= window.innerHeight) {
+          element.classList.add("pending");
+          observer.observe(element);
+        }
+      });
+    }
+  </script>
 </body>
 </html>
