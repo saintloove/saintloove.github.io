@@ -14,6 +14,9 @@
 .gallery-wide{background:linear-gradient(145deg,#fff6f1,#f6e4eb)}
 .cover-photo{background:radial-gradient(ellipse at 20% 12%,#fffaf0 0,transparent 62%),linear-gradient(145deg,#fff0e7,#f4dbe5)}
 .invitation{text-align:center}
+/* 비행기가 지도·제출 버튼을 가로막지 않도록 입력 영역을 위에 둡니다. */
+.game-section{position:relative;z-index:101;background:var(--paper)}
+.outline-button{position:relative;z-index:101;background:var(--paper)}
 
 </style>
 
@@ -58,7 +61,7 @@
     <button id="retry-status" class="text-button" type="button" hidden>제출 상태 다시 확인</button>
     <p class="fine-print">상품과 접수 마감은 추후 안내합니다.</p>
   </section>
-  <footer>SEOKWOO &amp; EONJU <span>2027. 01. 17.</span></footer>
+  <footer>SEOKWOO &amp; Lee Unjoo <span>2027. 01. 17.</span></footer>
 </main>
 <a id="score-badge" href="#game" aria-label="내 비행기 터치 기록과 제출하기">✈ <span id="badge-count">0</span><span id="badge-label">회</span></a>
 <div id="flight-layer"></div>
@@ -70,17 +73,16 @@
   <label for="guest-name">이름</label><input id="guest-name" name="guestName" autocomplete="name" maxlength="40" required placeholder="이름을 입력해 주세요">
   <label for="guest-phone">휴대전화 번호</label><input id="guest-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" required placeholder="010-0000-0000" aria-describedby="phone-note">
   <small id="phone-note">상품 안내와 중복 참여 확인에만 사용합니다.</small>
-  <label class="consent"><input id="consent" type="checkbox" required><span>이름·휴대전화 번호를 순위 집계 및 상품 연락 목적으로 수집하는 데 동의합니다. 운영자는 신랑·신부이며, 상품 전달 완료 후 30일 이내 삭제합니다. 동의를 거부할 수 있으나 상품 응모는 불가합니다.</span></label>
-  <p class="private-note">연락처와 전체 순위는 신랑·신부만 확인합니다.</p>
+  <label class="consent"><input id="consent" type="checkbox" required><span>이름·휴대전화 번호를 순위 집계 및 상품 연락 목적으로 수집하는 데 동의합니다. 운영자는 신랑 임석우이며, 상품 전달 완료 후 30일 이내 삭제합니다. 동의를 거부할 수 있으나 상품 응모는 불가합니다.</span></label>
+  <p class="private-note">이름·연락처와 전체 순위는 신랑 임석우만 확인합니다.</p>
   <button class="primary-button" id="final-submit" type="submit">최종 제출하고 게임 종료</button>
   <p id="form-error" role="alert"></p>
 </form></dialog>
 <script>
-// Supabase 연결 전에는 실제 제출이 비활성화됩니다.
-// 공개용 publishable 키만 입력하세요. secret/service_role 키는 절대 넣지 마세요.
+// 브라우저 공개용 키입니다. secret/service_role 키를 넣지 마세요.
 window.WEDDING_CONFIG = {
-  supabaseUrl: '',
-  publishableKey: '',
+  supabaseUrl: 'https://nqnvnnhbmpydnifurztl.supabase.co',
+  publishableKey: 'sb_publishable__c9C7SYpurXUzgWhMcsrXA_MvG_iFJL',
 };
 
 (() => {
