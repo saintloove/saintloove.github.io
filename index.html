@@ -114,6 +114,19 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 .plane .caught-heart{color:var(--flight-color,#a78e80)}
 .plane .spark{color:var(--flight-glint,#b6a489)}
 
+#score-badge{font-size:12px;padding:8px 12px;min-height:38px;display:flex;align-items:center;gap:4px}
+#badge-count{display:inline-block;min-width:1ch;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+main .photo:not(.cover-photo){z-index:101;cursor:zoom-in}
+main .photo:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#photo-dialog{width:min(94vw,800px);max-width:800px;max-height:94svh;padding:48px 14px 12px;border:0;background:var(--paper);overflow:hidden}
+#photo-dialog::backdrop{background:rgba(25,25,24,.86)}
+#photo-close{position:absolute;right:8px;top:4px;width:44px;height:44px;border:0;background:none;color:var(--ink);font:30px var(--sans)}
+#photo-stage{display:grid;place-items:center;height:68svh;background:#efede7}
+#photo-stage>img{display:block;max-width:100%;max-height:68svh;object-fit:contain}
+#photo-stage>span{font:14px var(--sans);letter-spacing:3px;color:var(--muted)}
+.photo-navigation{display:flex;align-items:center;justify-content:center;gap:20px;padding-top:10px;font:15px var(--sans);font-variant-numeric:tabular-nums}
+.photo-navigation button{width:48px;height:48px;border:0;background:none;color:var(--ink);font:30px var(--sans)}
+
 </style>
 
 </head>
@@ -212,6 +225,11 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
   <button class="primary-button" id="final-submit" type="submit">최종 제출하고 게임 종료</button>
   <p id="form-error" role="alert"></p>
 </form></dialog>
+<dialog id="photo-dialog" aria-label="웨딩북 사진 크게 보기">
+<button type="button" id="photo-close" aria-label="사진 닫기">×</button>
+<div id="photo-stage"></div>
+<nav class="photo-navigation" aria-label="사진 이동"><button id="photo-prev" type="button" aria-label="이전 사진">‹</button><span id="photo-position" aria-live="polite"></span><button id="photo-next" type="button" aria-label="다음 사진">›</button></nav>
+</dialog>
 <script>
 // 브라우저 공개용 키입니다. secret/service_role 키를 넣지 마세요.
 window.WEDDING_CONFIG = {
@@ -274,7 +292,11 @@ function blocked() {return submitted||submitting||checking||uncertain||closed||d
 function destroyPlanes() {planes.forEach(p=>{clearTimeout(p.timer);p.el.remove();});planes.clear();pendingCatches=0;}
 function paint() {
   if(submitted&&receipt) count=receipt.score;
-  $('#badge-count').textContent=count.toLocaleString('ko-KR');
+  const badgeNumber=$('#badge-count'),nextCount=count.toLocaleString('ko-KR');
+  if(badgeNumber.textContent!==nextCount){
+    badgeNumber.textContent=nextCount;
+    if(!reduced.matches)badgeNumber.animate([{transform:'scale(1)',opacity:1},{transform:'scale(1.28)',opacity:.7},{transform:'scale(1)',opacity:1}],{duration:360,easing:'ease-out'});
+  }
   $('#badge-label').textContent=submitted?'회 · 제출완료':'회';
   $('#total-score').textContent=count.toLocaleString('ko-KR');
   $('#open-submit').disabled=submitted||submitting||checking||uncertain||closed||pendingCatches>0||!storageOK||(!connected&&!demo);
@@ -448,6 +470,32 @@ paint();ensurePlanes();requestAnimationFrame(frame);if(connected&&!submitted)che
  }catch{status.textContent='전송하지 못했습니다. 잠시 후 다시 시도해 주세요.';}
  finally{button.disabled=false;}
  });
+})();
+
+(()=>{
+ const photos=[...document.querySelectorAll('main [data-photo]')];
+ const modal=document.querySelector('#photo-dialog'),stage=document.querySelector('#photo-stage'),position=document.querySelector('#photo-position');
+ let current=0,oldOverflow='';
+ function render(){
+  stage.replaceChildren();const source=photos[current].querySelector('img');
+  if(source){const img=document.createElement('img');img.src=source.dataset.full||source.currentSrc||source.src;img.alt=source.alt||'웨딩 사진';stage.append(img);}
+  else{const placeholder=document.createElement('span');placeholder.textContent='사진공간';stage.append(placeholder);}
+  position.textContent=(current+1)+' / '+photos.length;
+  document.querySelector('#photo-prev').disabled=current===0;
+  document.querySelector('#photo-next').disabled=current===photos.length-1;
+ }
+ function move(delta){current=Math.max(0,Math.min(photos.length-1,current+delta));render();}
+ photos.forEach((photo,i)=>{
+  photo.tabIndex=0;photo.setAttribute('role','button');photo.setAttribute('aria-label',(i+1)+'번째 사진 크게 보기');
+  function open(){current=i;render();oldOverflow=document.body.style.overflow;document.body.style.overflow='hidden';modal.showModal();}
+  photo.addEventListener('click',open);photo.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+ });
+ document.querySelector('#photo-close').addEventListener('click',()=>modal.close());
+ document.querySelector('#photo-prev').addEventListener('click',()=>move(-1));
+ document.querySelector('#photo-next').addEventListener('click',()=>move(1));
+ modal.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}if(e.key==='ArrowRight'){e.preventDefault();move(1);}});
+ modal.addEventListener('close',()=>{document.body.style.overflow=oldOverflow;});
+ modal.addEventListener('click',e=>{if(e.target===modal)modal.close();});
 })();
 
 </script>
