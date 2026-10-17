@@ -107,6 +107,13 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 .rsvp-choice input:checked+span{border-color:var(--ink);background:#efede7;color:var(--ink)}
 .rsvp-choice input:focus-visible+span{outline:2px solid var(--accent);outline-offset:3px}
 
+/* Muted airline-inspired colors complement the warm ivory paper. */
+.plane--eastar{--flight-color:#96545b;--flight-glint:#bf9196}
+.plane--premia{--flight-color:#465b72;--flight-glint:#91a1b2}
+.plane svg{fill:var(--flight-color,#9a9385);stroke:#fffdf8;stroke-width:.8}
+.plane .caught-heart{color:var(--flight-color,#a78e80)}
+.plane .spark{color:var(--flight-glint,#b6a489)}
+
 </style>
 
 </head>
@@ -168,7 +175,7 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 <details class="account-group rsvp-panel"><summary>참석 의사 보내기</summary>
 <form id="rsvp-form">
 <label>성함<input name="name" maxlength="30" autocomplete="name" required></label>
-<fieldset class="rsvp-choice"><legend>구분</legend><div><label><input type="radio" name="side" value="신랑 측" checked><span><b aria-hidden="true">♧</b>신랑 측</span></label><label><input type="radio" name="side" value="신부 측" ><span><b aria-hidden="true">♧</b>신부 측</span></label></div></fieldset>
+<fieldset class="rsvp-choice"><legend>구분</legend><div><label><input type="radio" name="side" value="신랑 측" checked><span>신랑 측</span></label><label><input type="radio" name="side" value="신부 측" ><span>신부 측</span></label></div></fieldset>
 <fieldset class="rsvp-choice"><legend>참석 여부</legend><div><label><input type="radio" name="attending" value="yes" checked><span><b aria-hidden="true">✓</b>참석합니다</span></label><label><input type="radio" name="attending" value="no" ><span><b aria-hidden="true">−</b>참석이 어렵습니다</span></label></div></fieldset>
 <label>본인 포함 참석 인원<input type="number" name="count" min="1" max="20" value="1" required></label>
 <label class="rsvp-consent"><input type="checkbox" required> 참석 확인을 위한 성함·참석 정보 수집에 동의합니다.</label>
@@ -327,10 +334,10 @@ async function addPoint(){
   const work=()=>{if(submitted||get(RECEIPT))return;count=Math.min(1000000,readScore()+1);put(SCORE,String(count));};
   if(navigator.locks)await navigator.locks.request(prefix+'score-update',work);else work();
 }
-function spawn(){
-  const b=bounds(),el=document.createElement('button');el.type='button';el.className='plane';el.setAttribute('aria-label','비행기 잡기');
+function spawn(tone){
+  const b=bounds(),el=document.createElement('button');el.type='button';el.className='plane plane--'+tone;el.setAttribute('aria-label','비행기 잡기');
   el.innerHTML='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3c2 0 3 3 3 6v7l13 9v4l-13-5v8l4 3v3l-7-2-7 2v-3l4-3v-8L4 29v-4l13-9V9c0-3 1-6 3-6Z"/></svg>';
-  const p={el,x:random(b.minX,b.maxX),y:random(b.minY,b.maxY),speed:random(42,68),tx:0,ty:0,angle:0,caught:false,timer:null};destination(p);draw(p);
+  const p={el,tone,x:random(b.minX,b.maxX),y:random(b.minY,b.maxY),speed:random(42,68),tx:0,ty:0,angle:0,caught:false,timer:null};destination(p);draw(p);
   el.addEventListener('click',()=>{
     if(p.caught||quietSection||blocked()||get(RECEIPT))return;
     p.caught=true;pendingCatches++;el.disabled=true;el.setAttribute('aria-label','하트로 변한 비행기');
@@ -341,7 +348,7 @@ function spawn(){
   });
   planes.add(p);$('#flight-layer').append(el);el.disabled=blocked();
 }
-function ensurePlanes(){if(submitted||closed)return;while(planes.size<total)spawn();}
+function ensurePlanes(){if(submitted||closed)return;for(const tone of ['eastar','premia'].slice(0,total)){if(![...planes].some(p=>p.tone===tone))spawn(tone);}}
 let last=0;
 function frame(t){updateFlightVisibility();const dt=last?Math.min((t-last)/1000,.05):0;last=t;
   if(!quietSection&&!document.hidden&&!reduced.matches&&!blocked())planes.forEach(p=>{if(p.caught||p.el===document.activeElement)return;const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);if(d<8){destination(p);return;}const step=Math.min(p.speed*dt,d);p.x+=dx/d*step;p.y+=dy/d*step;const desired=Math.atan2(dy,dx)*180/Math.PI+90;p.angle=(p.angle+(((desired-p.angle+540)%360)-180)*Math.min(1,dt*4)+360)%360;draw(p);});
