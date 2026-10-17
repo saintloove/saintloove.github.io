@@ -60,6 +60,31 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 
 .cover .cover-intro{background:rgba(35,30,24,.18)}
 
+/* 기존 색상과 서체를 이어 쓰는 계좌 및 방명록 */
+.account-section,.guestbook-section{border-top:1px solid var(--line)}
+#account-groups{margin-top:32px;text-align:left}.account-group{border-top:1px solid var(--line)}.account-group:last-child{border-bottom:1px solid var(--line)}
+.account-group summary{position:relative;z-index:101;background:var(--paper);cursor:pointer;padding:19px 0;font:14px var(--sans);list-style:none}.account-group summary::-webkit-details-marker{display:none}.account-group summary::after{content:'+';float:right;color:var(--muted)}.account-group[open] summary::after{content:'−'}
+.account-person{padding:20px 0;border-top:1px solid var(--line);font:13px/1.9 var(--sans)}.account-person>strong{font-weight:500}.account-person p{font:12px/1.9 var(--sans);color:var(--muted);margin-top:8px}.account-actions{display:flex;gap:8px;margin-top:12px}.account-actions button,.account-actions a{position:relative;z-index:101;flex:1;display:block;background:var(--paper);border:1px solid var(--line);padding:10px 4px;color:var(--ink);font:11px/1.5 var(--sans);text-align:center;text-decoration:none}.account-actions [aria-disabled=true]{opacity:.4;cursor:default}
+#guestbook-form{text-align:left;margin-top:30px;position:relative;z-index:101;background:var(--paper)}textarea{display:block;width:100%;resize:vertical;min-height:112px;padding:14px;border:1px solid #d7d1c7;border-radius:0;background:white;color:var(--ink);font:16px/1.8 var(--sans)}textarea:focus-visible{outline:2px solid var(--accent);outline-offset:4px}.guestbook-section .fine-print{font-size:10px}.guestbook-section .primary-button{margin-top:18px}#comment-list{text-align:left;margin-top:28px}.comment-item{padding:22px 0;border-top:1px solid var(--line);overflow-wrap:anywhere;word-break:normal}.comment-header{display:flex;justify-content:space-between;gap:12px;font:12px/1.8 var(--sans)}.comment-header time{font-size:10px;color:var(--muted)}.comment-item p{font:13px/1.9 var(--sans);white-space:pre-wrap;margin-top:12px}.comment-delete{position:relative;z-index:101;background:var(--paper);border:0;padding:8px 0;color:var(--muted);font:10px var(--sans)}#comment-more,#comment-retry{position:relative;z-index:101;background:var(--paper)}.consent-details{margin-top:12px;font:11px/1.8 var(--sans);color:var(--muted)}.consent-details summary{cursor:pointer}.consent-details p{text-align:left;font:11px/1.9 var(--sans);margin-top:10px}
+.plane{transition:opacity .18s ease}
+@media(prefers-reduced-motion:reduce){.plane{transition:none}}
+
+.kakao-pay{background:#fee500!important;color:#191919!important;border:0!important;border-radius:8px;font:bold 18px sans-serif;padding:9px 16px}.account-person p{overflow-wrap:anywhere}#rsvp-form{display:grid;gap:16px;text-align:left;margin-top:24px}#rsvp-form label{display:grid;gap:8px}#rsvp-form input:not([type=checkbox]),#rsvp-form select{width:100%;padding:12px;border:1px solid #ddd;background:#fff;font:inherit}#rsvp-form input[type=checkbox]{width:auto}
+
+/* Spacious RSVP controls, consistent with the invitation palette. */
+.rsvp-section{border-top:1px solid var(--line)}
+#rsvp .rsvp-panel{margin-top:36px;border:0}
+#rsvp .rsvp-panel>summary{padding:20px 24px;background:var(--ink);color:var(--paper);font:500 17px/1.6 var(--sans);text-align:center;min-height:64px}
+#rsvp .rsvp-panel>summary::after{color:inherit}
+#rsvp-form{position:relative;z-index:101;background:var(--paper);gap:28px;padding:32px 0 12px;margin-top:0;font:16px/1.7 var(--sans)}
+#rsvp-form label{gap:12px;font:16px/1.7 var(--sans)}
+#rsvp-form input:not([type=checkbox]),#rsvp-form select{box-sizing:border-box;min-height:56px;padding:15px 14px;color:var(--ink);font:16px/1.5 var(--sans);border-color:var(--line);border-radius:3px}
+#rsvp-form .rsvp-consent{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.9}
+#rsvp-form input[type=checkbox]{flex:0 0 20px;width:20px;height:20px;margin:4px 0 0;accent-color:var(--ink)}
+#rsvp-form .fine-print{font:13px/1.9 var(--sans);margin:0;text-align:left}
+#rsvp-form .primary-button{font:500 17px/1.6 var(--sans);min-height:60px;margin-top:4px}
+#rsvp-status{font:14px/1.8 var(--sans);margin-top:20px}
+
 </style>
 
 </head>
@@ -107,8 +132,29 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
       <section><span class="travel-number" aria-hidden="true">02</span><h3>지하철 이용 시</h3><p><strong>9호선 신반포역 · 4번 출구</strong><br>반포종합운동장 방향 도보 약 7분</p><p class="travel-muted">셔틀버스가 수시로 운행됩니다.</p></section>
       <section><span class="travel-number" aria-hidden="true">03</span><h3>버스 이용 시</h3><p><strong>반포종합운동장 하차</strong><br>마을버스 서초10 · 서초14 · 서초21<br>간선버스 142</p><p><strong>서래마을 입구 하차</strong><br>마을버스 서초13</p></section>
       <section><span class="travel-number" aria-hidden="true">04</span><h3>자가용 이용 시</h3><p>내비게이션에서 ‘더 컨벤션 반포’<br>또는 아래 주소를 검색해 주세요.</p><dl class="address-list"><dt>도로명</dt><dd>서울특별시 서초구 사평대로 108</dd><dt>지번</dt><dd>서울특별시 서초구 반포동 107-3</dd></dl></section>
+<section><span class="travel-number" aria-hidden="true">05</span><h3>축하 화환 안내</h3><p>예식장 공간이 협소하여<br>축하 화환은 정중히 사양합니다.<br>축하해 주시는 따뜻한 마음만<br>감사히 받겠습니다.</p></section>
     </div>
   </section>
+  <section class="section account-section" id="accounts" aria-labelledby="account-title">
+    <p class="eyebrow">WITH GRATITUDE</p><h2 id="account-title">마음 전하실 곳</h2>
+    <p>함께해 주시는 따뜻한 마음에<br>깊이 감사드립니다.</p>
+    <div id="account-groups"></div><p id="account-status" class="fine-print" role="status"></p>
+  </section>
+  <section class="section rsvp-section" id="rsvp">
+<p class="eyebrow">R.S.V.P.</p><h2>참석 의사 전달</h2>
+<p>소중한 분들을 정성껏 모실 수 있도록<br>참석 여부를 알려 주세요.</p>
+<details class="account-group rsvp-panel"><summary>참석 의사 보내기</summary>
+<form id="rsvp-form">
+<label>성함<input name="name" maxlength="30" autocomplete="name" required></label>
+<label>구분<select name="side"><option>신랑 측</option><option>신부 측</option></select></label>
+<label>참석 여부<select name="attending"><option value="yes">참석합니다</option><option value="no">참석이 어렵습니다</option></select></label>
+<label>본인 포함 참석 인원<input type="number" name="count" min="1" max="20" value="1" required></label>
+<label class="rsvp-consent"><input type="checkbox" required> 참석 확인을 위한 성함·참석 정보 수집에 동의합니다.</label>
+<p class="fine-print">예식 준비에만 이용하며 예식 후 30일 이내 삭제합니다.</p>
+<button class="primary-button" type="submit">참석 의사 전달하기</button>
+</form><p id="rsvp-status" role="status"></p></details>
+
+</section>
   <section class="closing"><div class="photo closing-photo reveal" data-photo="closing"><span>사진공간</span></div><div class="closing-text reveal"><p class="eyebrow">WITH LOVE</p><p>저희의 시작을 함께해 주셔서<br>감사합니다.</p><p class="closing-names">임석우 · 이언주</p></div></section>
   <section class="section game-section" id="game" aria-labelledby="game-title">
     <p class="eyebrow">A LITTLE LOVE FLIGHT</p><h2 id="game-title">마음을 모아주세요</h2><p class="game-intro">날아다니는 비행기를 터치하면<br>하트가 되어 마음이 하나씩 쌓여요.</p>
@@ -131,8 +177,9 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
   <label for="guest-name">이름</label><input id="guest-name" name="guestName" autocomplete="name" maxlength="40" required placeholder="이름을 입력해 주세요">
   <label for="guest-phone">휴대전화 번호</label><input id="guest-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" required placeholder="010-0000-0000" aria-describedby="phone-note">
   <small id="phone-note">상품 안내와 중복 참여 확인에만 사용합니다.</small>
-  <label class="consent"><input id="consent" type="checkbox" required><span>이름·휴대전화 번호를 순위 집계 및 상품 연락 목적으로 수집하는 데 동의합니다. 운영자는 신랑 임석우이며, 상품 전달 완료 후 30일 이내 삭제합니다. 동의를 거부할 수 있으나 상품 응모는 불가합니다.</span></label>
-  <p class="private-note">이름·연락처와 전체 순위는 신랑 임석우만 확인합니다.</p>
+  <label class="consent"><input id="consent" type="checkbox" required><span>상품 안내를 위한 개인정보 수집·이용에 동의합니다.</span></label>
+  <details class="consent-details"><summary>수집·이용 안내</summary><p>수집 항목: 이름, 휴대전화 번호<br>목적: 순위 집계, 중복 참여 확인 및 상품 연락<br>보관: 상품 전달 완료 후 30일 이내 삭제<br>동의를 거부할 수 있으나 상품 응모는 불가합니다.</p></details>
+
   <button class="primary-button" id="final-submit" type="submit">최종 제출하고 게임 종료</button>
   <p id="form-error" role="alert"></p>
 </form></dialog>
@@ -141,6 +188,8 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 window.WEDDING_CONFIG = {
   supabaseUrl: 'https://nqnvnnhbmpydnifurztl.supabase.co',
   publishableKey: 'sb_publishable__c9C7SYpurXUzgWhMcsrXA_MvG_iFJL',
+  // 계좌 및 카카오페이 송금 링크는 전달받은 뒤 입력합니다.
+  accounts: [{"side": "신랑 측", "people": [{"label": "신랑", "name": "임석우", "bank": "토스뱅크", "number": "1000-0626-9813", "payUrl": ""}, {"label": "아버지", "name": "임정수", "bank": "신한은행", "number": "110-006-011680", "payUrl": ""}, {"label": "어머니", "name": "강미주", "bank": "신한은행", "number": "110-432-151398", "payUrl": ""}]}, {"side": "신부 측", "people": [{"label": "신부", "name": "이언주", "bank": "신한은행", "number": "110-437-038924", "payUrl": ""}, {"label": "아버지", "name": "이경훈", "bank": "새마을금고", "number": "9003-2416-0051-1", "payUrl": ""}, {"label": "어머니", "name": "정화영", "bank": "우리은행", "number": "1002-052-088630", "payUrl": ""}]}]
 };
 
 (() => {
@@ -169,14 +218,29 @@ put(TOKEN,token);
 $('#demo-banner').hidden=!demo;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const planes=new Set();
-const total=Math.random()<.5?2:3;
-let quietSection=true;
+const total=2;
+// 비행기는 문서상의 첫 표지 끝부터 제출 섹션 시작 사이에서만 움직입니다.
+let quietSection=true, flightTop=0, flightBottom=0, previousScroll=scrollY;
 function updateFlightVisibility(){
-  quietSection=$('.cover').getBoundingClientRect().bottom>0 || $('#game').getBoundingClientRect().top<innerHeight;
-  $('#flight-layer').hidden=quietSection;
+ const offset=scrollY,delta=offset-previousScroll;previousScroll=offset;
+ flightTop=$('.cover').getBoundingClientRect().bottom+offset;
+ flightBottom=$('#game').getBoundingClientRect().top+offset;
+ const top=Math.max(0,Math.min(innerHeight,flightTop-offset));
+ const bottom=Math.max(top,Math.min(innerHeight,flightBottom-offset));
+ quietSection=bottom-top<74;
+ const layer=$('#flight-layer');layer.hidden=false;layer.inert=quietSection;
+ layer.style.clipPath=`inset(${top}px 0 ${innerHeight-bottom}px 0)`;
+ planes.forEach(p=>{
+   p.y=Math.max(flightTop+12,Math.min(p.y+delta,flightBottom-62));
+   const b=bounds();
+   if(!quietSection)p.y=Math.max(b.minY,Math.min(p.y,b.maxY));
+   if(!quietSection&&(p.ty<b.minY||p.ty>b.maxY))destination(p);
+   draw(p);
+ });
 }
 addEventListener('scroll',updateFlightVisibility,{passive:true});
 addEventListener('resize',updateFlightVisibility);
+new ResizeObserver(updateFlightVisibility).observe(document.querySelector('main'));
 updateFlightVisibility();
 let message='';
 function blocked() {return submitted||submitting||checking||uncertain||closed||dialog.open;}
@@ -230,10 +294,15 @@ async function checkStatus() {
   } catch (_) {checking=false;uncertain=true;paint();}
 }
 $('#retry-status').addEventListener('click',checkStatus);
-function bounds(){const width=Math.min(480,innerWidth);const start=(innerWidth-width)/2;return {minX:start+8,maxX:start+width-58,minY:100,maxY:Math.max(120,innerHeight-85)};}
+function bounds(){
+ const width=Math.min(480,innerWidth),start=(innerWidth-width)/2;
+ const minY=Math.max(flightTop+12,scrollY+80);
+ const maxY=Math.min(flightBottom-62,scrollY+innerHeight-70);
+ return {minX:start+8,maxX:start+width-58,minY,maxY:Math.max(minY,maxY)};
+}
 const random=(a,b)=>a+Math.random()*Math.max(0,b-a);
 function destination(p){const b=bounds();p.tx=random(b.minX,b.maxX);p.ty=random(b.minY,b.maxY);}
-function draw(p){p.el.style.transform=`translate3d(${p.x}px,${p.y}px,0)`;const svg=p.el.querySelector('svg');if(svg)svg.style.transform=`rotate(${p.angle}deg)`;}
+function draw(p){const y=p.y-scrollY;p.el.style.transform=`translate3d(${p.x}px,${y}px,0)`;p.el.style.opacity=String(Math.max(0,Math.min(1,(innerHeight-y-50)/36,(y+50)/36)));p.el.style.pointerEvents=quietSection?'none':'';const svg=p.el.querySelector('svg');if(svg)svg.style.transform=`rotate(${p.angle}deg)`;}
 async function addPoint(){
   const work=()=>{if(submitted||get(RECEIPT))return;count=Math.min(1000000,readScore()+1);put(SCORE,String(count));};
   if(navigator.locks)await navigator.locks.request(prefix+'score-update',work);else work();
@@ -316,15 +385,41 @@ paint();ensurePlanes();requestAnimationFrame(frame);if(connected&&!submitted)che
  const total=lengths.reduce((a,b)=>a+b,0);
  let delay=350;
  strokes.forEach((path,i)=>{
-  const duration=Math.max(95,lengths[i]/total*4700);
+  const duration=Math.max(95,lengths[i]/total*4700)/2;
   path.style.strokeDasharray=`${lengths[i]} ${lengths[i]}`;
   path.style.strokeDashoffset=lengths[i];
   path.style.setProperty('--pen-time',`${duration}ms`);
   path.style.setProperty('--pen-delay',`${delay}ms`);
-  delay+=duration+35;
+  delay+=duration+17.5;
  });
  intro.style.setProperty('--fade-at',`${delay+1600}ms`);
  requestAnimationFrame(()=>intro.classList.add('writing'));
+})();
+(()=>{
+ const root=document.querySelector('#account-groups'),cfg=window.WEDDING_CONFIG||{};
+ for(const group of cfg.accounts||[]){
+  const details=document.createElement('details');details.className='account-group';const summary=document.createElement('summary');summary.textContent=group.side;details.append(summary);
+  for(const person of group.people){
+   const row=document.createElement('div');row.className='account-person';const name=document.createElement('strong');name.textContent=[person.label,person.name].filter(Boolean).join(' · ');
+   const bank=document.createElement('p');bank.textContent=person.bank&&person.number?`${person.bank}  ${person.number}`:'계좌 정보 준비 중';
+   const actions=document.createElement('div');actions.className='account-actions';   let pay;try{const u=new URL(person.payUrl);if(u.protocol==='https:'&&u.hostname==='qr.kakaopay.com')pay=u.href;}catch{}
+   const link=document.createElement(pay?'a':'button');link.className='kakao-pay';link.setAttribute('aria-label','카카오페이로 송금');link.innerHTML='<span aria-hidden=true>● pay</span>';if(pay){link.href=pay;link.target='_blank';link.rel='noopener noreferrer';}else{link.type='button';link.disabled=true;link.setAttribute('aria-disabled','true');}if(person.label==="신랑"||person.label==="신부")actions.append(link);row.append(name,bank);if(actions.childElementCount)row.append(actions);details.append(row);
+  }
+  root.append(details);
+ }
+})();
+
+(()=>{
+ const form=document.querySelector('#rsvp-form'),status=document.querySelector('#rsvp-status'),cfg=window.WEDDING_CONFIG;
+ form.addEventListener('submit',async e=>{
+ e.preventDefault();const button=form.querySelector('button[type=submit]');button.disabled=true;status.textContent='전송 중입니다.';
+ try{
+ let token=localStorage.getItem('wedding-rsvp-token');if(!token){token=crypto.randomUUID();localStorage.setItem('wedding-rsvp-token',token);}
+ const d=new FormData(form),res=await fetch(cfg.supabaseUrl+'/rest/v1/rpc/wedding_rsvp_submit',{method:'POST',headers:{apikey:cfg.publishableKey,'Content-Type':'application/json'},body:JSON.stringify({p_token:token,p_name:d.get('name').trim(),p_side:d.get('side'),p_attending:d.get('attending')==='yes',p_count:Number(d.get('count'))})});
+ if(!res.ok)throw Error();status.textContent='참석 의사를 전달했습니다. 감사합니다.';
+ }catch{status.textContent='전송하지 못했습니다. 잠시 후 다시 시도해 주세요.';}
+ finally{button.disabled=false;}
+ });
 })();
 
 </script>
