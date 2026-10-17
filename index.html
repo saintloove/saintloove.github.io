@@ -85,6 +85,28 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 #rsvp-form .primary-button{font:500 17px/1.6 var(--sans);min-height:60px;margin-top:4px}
 #rsvp-status{font:14px/1.8 var(--sans);margin-top:20px}
 
+/* Match both RSVP actions to the existing game submission button. */
+#rsvp .rsvp-panel>summary,#rsvp-form .primary-button{
+ display:block;width:100%;box-sizing:border-box;min-height:0;height:auto;
+ border:0;border-radius:0;padding:17px 14px;
+ background:#3f403a;color:#fff;font:14px/1.5 var(--sans);text-align:center;
+}
+#rsvp .rsvp-panel>summary::after{position:absolute;right:14px;float:none}
+.plane{will-change:transform}
+
+#rsvp-form{gap:18px;padding-top:24px}
+#rsvp-form>label{margin:0;gap:8px;font-size:14px}
+#rsvp-form input:not([type=checkbox]):not([type=radio]){min-height:42px;padding:9px 12px;font-size:16px}
+#rsvp-form .rsvp-choice{margin:0;padding:0;border:0;min-width:0}
+.rsvp-choice legend{padding:0;margin-bottom:9px;font:14px/1.6 var(--sans)}
+.rsvp-choice>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#rsvp-form .rsvp-choice label{position:relative;margin:0;cursor:pointer}
+#rsvp-form .rsvp-choice input{position:absolute;opacity:0;width:1px;height:1px}
+.rsvp-choice span{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:8px 4px;border:1px solid var(--line);font:13px/1.5 var(--sans);color:var(--muted);background:white}
+.rsvp-choice b{font-size:18px;font-weight:normal}
+.rsvp-choice input:checked+span{border-color:var(--ink);background:#efede7;color:var(--ink)}
+.rsvp-choice input:focus-visible+span{outline:2px solid var(--accent);outline-offset:3px}
+
 </style>
 
 </head>
@@ -146,8 +168,8 @@ body{background:#eeece7}main{background:var(--paper)}p{font-size:14px;line-heigh
 <details class="account-group rsvp-panel"><summary>참석 의사 보내기</summary>
 <form id="rsvp-form">
 <label>성함<input name="name" maxlength="30" autocomplete="name" required></label>
-<label>구분<select name="side"><option>신랑 측</option><option>신부 측</option></select></label>
-<label>참석 여부<select name="attending"><option value="yes">참석합니다</option><option value="no">참석이 어렵습니다</option></select></label>
+<fieldset class="rsvp-choice"><legend>구분</legend><div><label><input type="radio" name="side" value="신랑 측" checked><span><b aria-hidden="true">♧</b>신랑 측</span></label><label><input type="radio" name="side" value="신부 측" ><span><b aria-hidden="true">♧</b>신부 측</span></label></div></fieldset>
+<fieldset class="rsvp-choice"><legend>참석 여부</legend><div><label><input type="radio" name="attending" value="yes" checked><span><b aria-hidden="true">✓</b>참석합니다</span></label><label><input type="radio" name="attending" value="no" ><span><b aria-hidden="true">−</b>참석이 어렵습니다</span></label></div></fieldset>
 <label>본인 포함 참석 인원<input type="number" name="count" min="1" max="20" value="1" required></label>
 <label class="rsvp-consent"><input type="checkbox" required> 참석 확인을 위한 성함·참석 정보 수집에 동의합니다.</label>
 <p class="fine-print">예식 준비에만 이용하며 예식 후 30일 이내 삭제합니다.</p>
@@ -189,7 +211,7 @@ window.WEDDING_CONFIG = {
   supabaseUrl: 'https://nqnvnnhbmpydnifurztl.supabase.co',
   publishableKey: 'sb_publishable__c9C7SYpurXUzgWhMcsrXA_MvG_iFJL',
   // 계좌 및 카카오페이 송금 링크는 전달받은 뒤 입력합니다.
-  accounts: [{"side": "신랑 측", "people": [{"label": "신랑", "name": "임석우", "bank": "토스뱅크", "number": "1000-0626-9813", "payUrl": ""}, {"label": "아버지", "name": "임정수", "bank": "신한은행", "number": "110-006-011680", "payUrl": ""}, {"label": "어머니", "name": "강미주", "bank": "신한은행", "number": "110-432-151398", "payUrl": ""}]}, {"side": "신부 측", "people": [{"label": "신부", "name": "이언주", "bank": "신한은행", "number": "110-437-038924", "payUrl": ""}, {"label": "아버지", "name": "이경훈", "bank": "새마을금고", "number": "9003-2416-0051-1", "payUrl": ""}, {"label": "어머니", "name": "정화영", "bank": "우리은행", "number": "1002-052-088630", "payUrl": ""}]}]
+  accounts: [{"side": "신랑 측", "people": [{"label": "신랑", "name": "임석우", "bank": "토스뱅크", "number": "1000-0626-9813", "payUrl": "https://qr.kakaopay.com/FVpBdEXOj"}, {"label": "아버지", "name": "임정수", "bank": "신한은행", "number": "110-006-011680", "payUrl": ""}, {"label": "어머니", "name": "강미주", "bank": "신한은행", "number": "110-432-151398", "payUrl": ""}]}, {"side": "신부 측", "people": [{"label": "신부", "name": "이언주", "bank": "신한은행", "number": "110-437-038924", "payUrl": "https://qr.kakaopay.com/Ej7rYUlhi"}, {"label": "아버지", "name": "이경훈", "bank": "새마을금고", "number": "9003-2416-0051-1", "payUrl": ""}, {"label": "어머니", "name": "정화영", "bank": "우리은행", "number": "1002-052-088630", "payUrl": ""}]}]
 };
 
 (() => {
@@ -231,14 +253,12 @@ function updateFlightVisibility(){
  const layer=$('#flight-layer');layer.hidden=false;layer.inert=quietSection;
  layer.style.clipPath=`inset(${top}px 0 ${innerHeight-bottom}px 0)`;
  planes.forEach(p=>{
-   p.y=Math.max(flightTop+12,Math.min(p.y+delta,flightBottom-62));
-   const b=bounds();
-   if(!quietSection)p.y=Math.max(b.minY,Math.min(p.y,b.maxY));
-   if(!quietSection&&(p.ty<b.minY||p.ty>b.maxY))destination(p);
-   draw(p);
+   // Keep viewport position and destination stable during scrolling.
+   // Section boundaries clip the layer instead of teleporting each plane.
+   p.y+=delta;p.ty+=delta;
  });
 }
-addEventListener('scroll',updateFlightVisibility,{passive:true});
+
 addEventListener('resize',updateFlightVisibility);
 new ResizeObserver(updateFlightVisibility).observe(document.querySelector('main'));
 updateFlightVisibility();
@@ -323,8 +343,9 @@ function spawn(){
 }
 function ensurePlanes(){if(submitted||closed)return;while(planes.size<total)spawn();}
 let last=0;
-function frame(t){const dt=last?Math.min((t-last)/1000,.05):0;last=t;
+function frame(t){updateFlightVisibility();const dt=last?Math.min((t-last)/1000,.05):0;last=t;
   if(!quietSection&&!document.hidden&&!reduced.matches&&!blocked())planes.forEach(p=>{if(p.caught||p.el===document.activeElement)return;const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);if(d<8){destination(p);return;}const step=Math.min(p.speed*dt,d);p.x+=dx/d*step;p.y+=dy/d*step;const desired=Math.atan2(dy,dx)*180/Math.PI+90;p.angle=(p.angle+(((desired-p.angle+540)%360)-180)*Math.min(1,dt*4)+360)%360;draw(p);});
+  planes.forEach(draw);
   requestAnimationFrame(frame);
 }
 addEventListener('resize',()=>{const b=bounds();planes.forEach(p=>{p.x=Math.max(b.minX,Math.min(p.x,b.maxX));p.y=Math.max(b.minY,Math.min(p.y,b.maxY));destination(p);draw(p);});});
