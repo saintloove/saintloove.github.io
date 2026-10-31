@@ -140,7 +140,19 @@ main .photo{cursor:default}
 #gallery-nav{height:58px;display:flex;align-items:center;justify-content:center;gap:18px;font:14px var(--sans);font-variant-numeric:tabular-nums}
 #gallery-nav button{width:44px;height:44px;border:0;background:none;color:#fff;font:22px var(--sans)}
 
-.cover .cover-photo{overflow:hidden}.cover .cover-photo img{will-change:transform;transform-origin:50% 25%;backface-visibility:hidden}
+.cover .cover-photo{overflow:hidden}.cover .cover-photo img{transform:none}
+
+/* The photo itself defines the viewer frame, without a fixed dark panel. */
+#gallery-viewer{width:100vw;max-width:none;height:100svh;max-height:none;padding:0;margin:0;background:transparent;overflow:hidden}
+#gallery-viewer::backdrop{background:rgba(22,21,19,.88);backdrop-filter:blur(8px)}
+.gallery-frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:100%;padding-top:40px}
+#gallery-stage{position:relative;display:block;width:1px;height:1px;background:transparent;overflow:hidden;transition:width 360ms cubic-bezier(.22,.61,.36,1),height 360ms cubic-bezier(.22,.61,.36,1)}
+#gallery-stage img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;touch-action:none}
+#gallery-close{top:-5px;right:-8px;font-size:26px}
+#gallery-nav{height:54px;gap:16px;font-size:13px;letter-spacing:1px}
+#gallery-nav button{font-size:19px;opacity:.85}
+#gallery-nav button:disabled{opacity:.2}
+@media(prefers-reduced-motion:reduce){#gallery-stage{transition:none}}
 
 </style>
 
@@ -241,9 +253,9 @@ main .photo{cursor:default}
   <p id="form-error" role="alert"></p>
 </form></dialog>
 <dialog id="gallery-viewer" aria-label="함께한 순간들 사진 보기">
-<button type="button" id="gallery-close" aria-label="사진 닫기">×</button>
+<div class="gallery-frame"><button type="button" id="gallery-close" aria-label="사진 닫기">×</button>
 <div id="gallery-stage"><img id="gallery-image" alt="" draggable="false"></div>
-<nav id="gallery-nav" aria-label="사진 순서"><button type="button" id="gallery-prev" aria-label="이전 사진">&lt;</button><span id="gallery-position" aria-live="polite"></span><button type="button" id="gallery-next" aria-label="다음 사진">&gt;</button></nav>
+<nav id="gallery-nav" aria-label="사진 순서"><button type="button" id="gallery-prev" aria-label="이전 사진">&lt;</button><span id="gallery-position" aria-live="polite"></span><button type="button" id="gallery-next" aria-label="다음 사진">&gt;</button></nav></div>
 </dialog>
 <script>
 // 브라우저 공개용 키입니다. secret/service_role 키를 넣지 마세요.
@@ -482,50 +494,51 @@ paint();ensurePlanes();requestAnimationFrame(frame);if(connected&&!submitted)che
 })();
 
 
-// Only populated gallery photos participate; cover and placeholders stay non-interactive.
+// Gallery viewer: natural image proportions, decoded transitions, scoped pinch blocking.
 (()=>{
  const photos=[...document.querySelectorAll('.gallery [data-photo]')].filter(el=>el.querySelector('img'));
- const modal=document.querySelector('#gallery-viewer'),image=document.querySelector('#gallery-image'),position=document.querySelector('#gallery-position');
+ const modal=document.querySelector('#gallery-viewer'),stage=document.querySelector('#gallery-stage'),position=document.querySelector('#gallery-position');
  const previous=document.querySelector('#gallery-prev'),next=document.querySelector('#gallery-next');
- let current=0,oldOverflow='',opener=null;
- function render(){
-  const source=photos[current].querySelector('img');
-  image.src=source.currentSrc||source.src;image.alt=source.alt;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ let image=document.querySelector('#gallery-image'),current=0,oldOverflow='',opener=null,revision=0;
+ function fit(img){
+  const availableWidth=Math.min(innerWidth-32,900),availableHeight=Math.max(100,innerHeight-150);
+  const ratio=img.naturalWidth/Math.max(1,img.naturalHeight);
+  const width=Math.min(availableWidth,availableHeight*ratio);
+  stage.style.width=width+'px';stage.style.height=width/ratio+'px';
+ }
+ async function render(index,direction=0){
+  const request=++revision,source=photos[index].querySelector('img'),incoming=new Image();
+  incoming.src=source.currentSrc||source.src;incoming.alt=source.alt;incoming.draggable=false;
+  try{await incoming.decode();}catch{if(!incoming.naturalWidth){position.textContent='사진을 불러오지 못했습니다.';return;}}
+  if(request!==revision||!modal.open)return;
+  const outgoing=image,animate=!reduced.matches&&!!outgoing.getAttribute('src');
+  current=index;fit(incoming);incoming.id='gallery-image';outgoing.removeAttribute('id');
+  stage.append(incoming);image=incoming;
   position.textContent=(current+1)+' / '+photos.length;
   previous.disabled=current===0;next.disabled=current===photos.length-1;
+  if(animate){
+   const timing={duration:360,easing:'cubic-bezier(.22,.61,.36,1)'};
+   incoming.animate([{opacity:0,transform:'translateX('+direction*18+'px)'},{opacity:1,transform:'translateX(0)'}],timing);
+   const exit=outgoing.animate([{opacity:1,transform:'translateX(0)'},{opacity:0,transform:'translateX('+(-direction*12)+'px)'}],timing);
+   exit.finished.catch(()=>{}).finally(()=>outgoing.remove());
+  }else outgoing.remove();
  }
- function move(delta){current=Math.max(0,Math.min(photos.length-1,current+delta));render();}
+ function move(delta){const index=Math.max(0,Math.min(photos.length-1,current+delta));if(index!==current)render(index,delta);}
  photos.forEach((photo,i)=>{
   photo.tabIndex=0;photo.setAttribute('role','button');photo.setAttribute('aria-label',(i+1)+'번째 사진 크게 보기');
-  const open=()=>{current=i;opener=photo;render();oldOverflow=document.body.style.overflow;document.body.style.overflow='hidden';modal.showModal();};
+  const open=()=>{opener=photo;oldOverflow=document.body.style.overflow;document.body.style.overflow='hidden';modal.showModal();position.textContent='불러오는 중';render(i);};
   photo.addEventListener('click',open);
   photo.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
  });
  previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
  document.querySelector('#gallery-close').addEventListener('click',()=>modal.close());
- modal.addEventListener('close',()=>{document.body.style.overflow=oldOverflow;opener?.focus({preventScroll:true});});
+ modal.addEventListener('close',()=>{revision++;document.body.style.overflow=oldOverflow;opener?.focus({preventScroll:true});stage.querySelectorAll('img').forEach(el=>{if(el!==image)el.remove();});image.removeAttribute('src');});
  modal.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}if(e.key==='ArrowRight'){e.preventDefault();move(1);}});
- // Disable additional pinch/gesture zoom only within the open photo viewer.
+ addEventListener('resize',()=>{if(modal.open&&image.naturalWidth)fit(image);});
  for(const name of ['gesturestart','gesturechange','gestureend'])modal.addEventListener(name,e=>e.preventDefault(),{passive:false});
  for(const name of ['touchstart','touchmove'])modal.addEventListener(name,e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
  modal.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
-})();
-
-// Smooth, time-based cover zoom. Scroll updates a target, never jumps the image.
-(()=>{
- const cover=document.querySelector('.cover'),photo=cover.querySelector('img');
- const reduced=matchMedia('(prefers-reduced-motion: reduce)');
- let scale=1,last=0,raf=0;
- function tick(t){
-  const dt=last?Math.min((t-last)/1000,.05):1/60;last=t;
-  const target=reduced.matches?1:1+Math.min(1,Math.max(0,scrollY/Math.max(1,cover.clientHeight)))*.065;
-  scale+=(target-scale)*(1-Math.exp(-dt/0.14));
-  photo.style.transform='translate3d(0,0,0) scale('+scale.toFixed(5)+')';
-  if(Math.abs(target-scale)>.00005)raf=requestAnimationFrame(tick);else{raf=0;last=0;}
- }
- function wake(){if(!raf)raf=requestAnimationFrame(tick);}
- addEventListener('scroll',wake,{passive:true});addEventListener('resize',wake);
- reduced.addEventListener('change',wake);wake();
 })();
 
 </script>
