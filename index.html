@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#f7f4ee">
 <meta name="description" content="임석우 · 이언주, 2027년 1월 17일 오후 3시 30분. 더 컨벤션 반포에서 함께해 주세요.">
 <meta property="og:type" content="website">
@@ -153,6 +153,13 @@ main .photo{cursor:default}
 #gallery-nav button{font-size:19px;opacity:.85}
 #gallery-nav button:disabled{opacity:.2}
 @media(prefers-reduced-motion:reduce){#gallery-stage{transition:none}}
+
+/* No rectangular focus ring on the photo close icon. */
+#gallery-close,#gallery-close:focus,#gallery-close:focus-visible{outline:none;box-shadow:none;border:0;background:transparent;-webkit-tap-highlight-color:transparent}
+#gallery-close:focus-visible{color:#fff1d3;text-shadow:0 0 8px rgba(255,241,211,.5)}
+html,body,main{touch-action:pan-y}
+.photo,.photo img{touch-action:pan-y}
+#gallery-viewer,#gallery-stage,#gallery-stage img{touch-action:none}
 
 </style>
 
@@ -543,14 +550,45 @@ paint();ensurePlanes();requestAnimationFrame(frame);if(connected&&!submitted)che
   photo.addEventListener('click',open);
   photo.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
  });
+ // Single-finger swipes navigate; multi-touch and vertical drags do not.
+ let swipe=null;
+ function cancelSwipe(){swipe=null;image.style.transform='';}
+ stage.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1){cancelSwipe();return;}
+  const t=e.touches[0];swipe={x:t.clientX,y:t.clientY};
+ },{passive:true});
+ stage.addEventListener('touchmove',e=>{
+  if(!swipe||e.touches.length!==1){cancelSwipe();return;}
+  const dx=e.touches[0].clientX-swipe.x,dy=e.touches[0].clientY-swipe.y;
+  if(Math.abs(dx)>Math.abs(dy))image.style.transform='translateX('+Math.max(-24,Math.min(24,dx*.16))+'px)';
+ },{passive:true});
+ stage.addEventListener('touchend',e=>{
+  if(!swipe)return;
+  const start=swipe,t=e.changedTouches[0];cancelSwipe();
+  if(!t||e.touches.length)return;
+  const dx=t.clientX-start.x,dy=t.clientY-start.y;
+  if(Math.abs(dx)>=40&&Math.abs(dx)>Math.abs(dy)*1.25)move(dx<0?1:-1);
+ },{passive:true});
+ stage.addEventListener('touchcancel',cancelSwipe,{passive:true});
  previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
  document.querySelector('#gallery-close').addEventListener('click',()=>modal.close());
- modal.addEventListener('close',()=>{revision++;document.body.style.overflow=oldOverflow;opener?.focus({preventScroll:true});stage.querySelectorAll('img').forEach(el=>{if(el!==image)el.remove();});image.removeAttribute('src');});
+ modal.addEventListener('close',()=>{cancelSwipe();revision++;document.body.style.overflow=oldOverflow;opener?.focus({preventScroll:true});stage.querySelectorAll('img').forEach(el=>{if(el!==image)el.remove();});image.removeAttribute('src');});
  modal.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}if(e.key==='ArrowRight'){e.preventDefault();move(1);}});
  addEventListener('resize',()=>{if(modal.open&&image.naturalWidth)fit(image);});
  for(const name of ['gesturestart','gesturechange','gestureend'])modal.addEventListener(name,e=>e.preventDefault(),{passive:false});
  for(const name of ['touchstart','touchmove'])modal.addEventListener(name,e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
  modal.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
+})();
+
+// Keep the photo invitation at its intended scale, while retaining vertical scrolling.
+(()=>{
+ const cancel=e=>{if(e.cancelable)e.preventDefault();};
+ for(const name of ['gesturestart','gesturechange','gestureend'])
+  document.addEventListener(name,cancel,{passive:false});
+ for(const name of ['touchstart','touchmove'])
+  document.addEventListener(name,e=>{if(e.touches.length>1)cancel(e);},{passive:false});
+ document.addEventListener('dblclick',e=>{if(e.target.closest('.photo, #gallery-viewer'))cancel(e);},{passive:false});
+ document.addEventListener('wheel',e=>{if(e.ctrlKey)cancel(e);},{passive:false});
 })();
 
 </script>
